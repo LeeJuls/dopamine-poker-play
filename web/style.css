@@ -1,0 +1,384 @@
+/* proto/web/style.css — 기능 UI, 아트 0. 카드 이미지 금지(텍스트 심볼+색+효과명). */
+
+* { box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #1b1d22;
+  color: #e8e8ea;
+  margin: 0;
+  padding: 12px;
+  font-size: 14px;
+}
+
+h1 { font-size: 18px; margin: 0 0 8px; }
+h2 { font-size: 15px; margin: 0 0 6px; }
+
+.panel {
+  background: #26282f;
+  border: 1px solid #3a3d46;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+#setup-panel { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+#setup-panel label { display: flex; flex-direction: column; font-size: 12px; gap: 2px; }
+.checkbox-label { flex-direction: row !important; align-items: center; gap: 6px !important; }
+input[type=number] { width: 80px; }
+.hint { font-size: 11px; color: #9a9ea8; flex-basis: 100%; }
+
+button {
+  background: #3d5afe;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+button:hover { background: #5c74ff; }
+button:disabled { background: #4a4d57; cursor: not-allowed; }
+button.secondary { background: #4a4d57; }
+button.secondary:hover { background: #5a5d67; }
+
+#status-bar { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; }
+#status-bar b { color: #ffd166; }
+
+#battlefield {
+  display: grid;
+  grid-template-columns: 1fr 220px 1fr;
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  #battlefield { grid-template-columns: 1fr; }
+}
+
+.player-panel h3 { margin: 0 0 6px; font-size: 14px; }
+.bar-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+.bar-track { flex: 1; height: 12px; background: #14151a; border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; }
+.bar-fill.hp { background: #e05263; }
+.bar-fill.sp { background: #4fc3f7; }
+.bar-label { width: 90px; font-size: 11px; color: #b7bac2; }
+.bar-value { width: 70px; font-size: 11px; text-align: right; }
+
+.status-badges, .card-badges { display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0; }
+.badge {
+  border: 1px solid #4a4d57;
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 11px;
+  background: #2f323b;
+}
+.badge.burn { border-color: #e05263; color: #ff9aa6; }
+.badge.freeze { border-color: #4fc3f7; color: #9fe0ff; }
+
+/* ★R10-W(2026-08-17, 오너 요청) — 보유 카드 전체를 감싸는 트레이. 기존엔 배지가
+   패널 배경 위에 바로 나열돼 존재감이 없었다("보유 스킬들도 좀 더 잘 보이게") —
+   테두리 있는 박스로 한 덩어리처럼 보이게 한다. 다크 테마·기존 팔레트 그대로. */
+.card-groups {
+  margin: 4px 0 8px;
+  padding: 6px 8px;
+  background: #1c1e24;
+  border: 1px solid #3a3d46;
+  border-radius: 6px;
+}
+.card-group { margin-bottom: 6px; }
+.card-group:last-child { margin-bottom: 0; }
+.card-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #9a9ea8;
+  margin: 0 0 3px;
+}
+.card-group-header .group-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.card-group-header.passive .group-dot { background: #7ee787; }
+.card-group-header.active .group-dot { background: #ffd166; }
+/* ★R10-W — 액티브 그룹이 SP 임계(엔진 spAtThreshold와 동일 술어, app.js 주석 참조)에
+   닿았을 때만 뜨는 표시 — SP 게이지 색(#4fc3f7)과 맞춰 "SP가 이걸 채웠다"는 연결을 준다. */
+.active-ready-pill {
+  font-size: 10px;
+  font-weight: bold;
+  color: #0f1014;
+  background: #4fc3f7;
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+/* C-1: 보유 카드 배지 — <button>으로 바뀌어도 기존 시각 스타일 유지 + 클릭 가능 표시.
+   ★R10-W — 상태이상/버프 배지(.badge.effect, 작은 필)보다 한 단계 크게 키워 "보유 아이템"
+   느낌을 주고, .passive/.active로 색을 갈라 구분이 화면에서 바로 읽히게 한다. */
+.badge.card {
+  border-color: #ffd166;
+  color: #ffe4a1;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-width: 2px;
+  border-radius: 5px;
+}
+.badge.card.open { background: #4a3f1a; box-shadow: 0 0 0 1px #ffd166 inset; }
+.badge.card.passive { border-color: #7ee787; color: #c8f7cb; background: #1e2b1f; }
+.badge.card.passive.open { background: #24401f; box-shadow: 0 0 0 1px #7ee787 inset; }
+.badge.card.active { border-color: #ffd166; color: #ffe4a1; background: #2f2717; }
+.badge.card.active.open { background: #4a3f1a; box-shadow: 0 0 0 1px #ffd166 inset; }
+/* SP 임계 도달 시 액티브 배지에 SP 게이지 색 링 — 위 .active-ready-pill과 같은 신호를
+   개별 카드에도 반복해 "이 카드가 지금 쓸 수 있다"가 카드 단위로도 읽히게 한다. */
+.badge.card.active.ready { box-shadow: 0 0 0 2px #4fc3f7; }
+.badge.card.active.ready.open { box-shadow: 0 0 0 2px #4fc3f7, 0 0 0 4px #ffd166 inset; }
+
+/* R9-W: 상태이상·버프 배지 — <button>으로 클릭 시 효과 상세(C-1 카드 배지와 동일 패턴).
+   .burn/.freeze는 기존 색상 그대로 재사용, 버프 2종만 신설 색상. */
+.badge.effect { font: inherit; cursor: pointer; appearance: none; }
+.badge.effect.open { box-shadow: 0 0 0 1px currentColor inset; background: rgba(255, 255, 255, 0.08); }
+.badge.buff-atk { border-color: #f4a261; color: #ffcfa3; }
+/* ★D2(⑥ ♦=방어 전수 정정) — 구 .buff-def(방어)를 .buff-crit(치명타 확률)로 개명.
+   색은 그대로 재사용(팔레트 변경 없음, EFFECT_BADGES 키 리네임과 짝). */
+.badge.buff-crit { border-color: #66bb6a; color: #b9e6ba; }
+.card-detail-box {
+  margin: 4px 0 8px;
+  padding: 6px 8px;
+  background: #1c1e24;
+  border: 1px solid #3a3d46;
+  border-left: 3px solid #ffd166;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.card-detail-box b { color: #ffd166; }
+/* ★short(2026-08-19, web-engineer) — card-detail-box 안의 desc(명세 문장) 보조 줄.
+   short(위 헤드라인)보다 한 단계 옅게 보여 "짧은 설명이 먼저, 상세는 그 아래"를
+   시각적으로도 드러낸다. */
+.card-detail-box .card-detail-full { margin-top: 4px; color: #9aa0b4; font-size: 11px; }
+
+.opp-hand-backs { display: flex; gap: 3px; margin-top: 4px; }
+.card-back {
+  width: 22px; height: 32px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(45deg, #3d5afe, #3d5afe 3px, #2a2f66 3px, #2a2f66 6px);
+  border: 1px solid #1f2230;
+}
+
+.hand-grid { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.card {
+  width: 54px; height: 76px;
+  border-radius: 5px;
+  border: 2px solid #4a4d57;
+  background: #14151a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  font-weight: bold;
+}
+.card .rank { font-size: 16px; }
+.card .suit { font-size: 18px; }
+.card.suit-black { color: #e8e8ea; }
+.card.suit-red { color: #ff6b6b; }
+.card.joker { color: #ffd166; }
+.card.selected { border-color: #3d5afe; box-shadow: 0 0 0 2px #3d5afe inset; background: #1c2140; }
+.card.deferred-badge::after {
+  content: "이월";
+  position: absolute;
+  top: -8px; right: -8px;
+  background: #ffd166;
+  color: #26282f;
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+.card:hover { border-color: #7a8098; }
+
+.readout-box { font-size: 12px; line-height: 1.6; }
+.readout-box .rankcat { font-size: 15px; font-weight: bold; color: #ffd166; }
+
+/* W2-2: 조커 2장 제출 차단 경고 */
+.joker-cap-warn { color: #ff6b6b; font-size: 12px; margin: 4px 0; }
+
+/* ★★대회 치명 버그 수정(더블클릭 시 네이티브 alert 제거) — alert() 대신 화면 안에
+   그리는 인라인 에러. 기존 joker-cap-warn/.fail과 같은 경고색(#ff6b6b) 계열을
+   재사용해 새 색상 하드코딩을 만들지 않는다. */
+.inline-error { color: #ff6b6b; font-size: 12px; }
+.action-error-banner { margin: 6px 0; padding: 6px 10px; border: 1px solid #ff6b6b; border-radius: 4px; background: rgba(255, 107, 107, 0.08); }
+
+/* W2-5: 와일드 배정(제출 확정 후에만 노출) */
+.wild-assign { color: #ffd166; font-size: 12px; }
+
+/* ★수트 효과 양측 표시(2026-08-19, web-engineer) — 라운드 판정 리드아웃(renderReadout)에서
+   A/B 각자의 수트 획득 줄. 데미지 4층 분해(.battle-log-detail)와 같은 톤(옅은 보조 텍스트)을
+   맞춘다. */
+.suit-applied-line { color: #9aa0b4; font-size: 12px; margin: 2px 0 6px 8px; }
+
+table.log-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+table.log-table th, table.log-table td { border-bottom: 1px solid #3a3d46; padding: 3px 6px; text-align: left; }
+
+#export-block {
+  max-height: 280px;
+  overflow: auto;
+  background: #0f1014;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+#selfcheck-result { font-size: 12px; margin: 6px 0; }
+.ok { color: #7ee787; }
+.fail { color: #ff6b6b; }
+
+.turn-flag { font-weight: bold; color: #7ee787; }
+
+/* ★W-신규6(2026-08-17, web-engineer — 오너 원문 "다음 턴이 도파민 카드 뽑기라는 걸
+   알려줬음 좋겠어") — 상태바의 뽑기 예고 표시. imminent(다음 판정 후 뽑기 확정)만
+   눈에 띄게, 평소엔 은은한 카운트다운으로. */
+.draft-preview { color: #9a9ea8; }
+.draft-preview.imminent { color: #ffd166; font-weight: bold; }
+
+/* A7(쥐어짜기, 구 「강요」)·A9(밑장 보기, 구 「투시」) 공개 정보 노트 — 배지가 아니라 한 줄 텍스트라 별도 색만 준다. */
+.forced-min-note { color: #f4a261; font-size: 12px; margin: 3px 0; }
+.revealed-cards { color: #4fc3f7; font-size: 12px; margin: 3px 0; }
+
+/* ★D2(② 판돈 가시화, G-A-9 오너 직접 지시) — 성장 사건·상한 도달 2종. status-bar의
+   짧은 플래그(항상 보이는 상단 줄)와 panel-shared의 전체 폭 배너(battlefield 영역)
+   양쪽에서 같은 두 색을 재사용한다 — "성장"은 기존 골드 강조색(#ffd166, active-ready-pill
+   등과 동일 계열), "상한 도달"은 기존 경고색(#ff6b6b, joker-cap-warn/.fail과 동일 계열). */
+.pot-growth-flag, .pot-cap-flag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 4px;
+}
+.pot-growth-flag { background: #ffd166; color: #2f2717; }
+.pot-cap-flag { background: #ff6b6b; color: #2a0f0f; }
+
+.pot-growth-banner, .pot-cap-banner {
+  margin: 6px 0;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.pot-growth-banner { background: #4a3f1a; color: #ffd166; border: 1px solid #ffd166; }
+.pot-cap-banner { background: #401a1a; color: #ff9aa6; border: 1px solid #ff6b6b; }
+
+/* ★D2(④ 데미지 표기 분해) — 치명타가 실제로 터진 순간을 강조(배틀로그 접힌 요약·
+   펼침 분해·판정 줄 3곳에서 공유하는 단일 클래스, renderActionSummary/renderBreakdown/
+   renderSubLines). */
+.crit-hit { color: #ff6b6b; }
+
+/* ★W-신규6 — 도파민 카드 뽑기 화면(획득 시점)에도 패시브/액티브 구분이 보이도록
+   (오너 지적 "나뉜 게 게임에서 안 느껴졌다" — R10-W는 보유 카드 트레이만 갈랐다).
+   보유 카드 배지(.badge.card.passive/.active)와 같은 녹색/호박색 팔레트 재사용 —
+   같은 개념은 같은 색으로(드리프트 방지). */
+.draft-offer-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 6px;
+  background: #26282f;
+  color: #e8e8ea;
+  font-family: inherit;
+}
+.draft-offer-btn.passive { border-color: #7ee787; background: #1e2b1f; }
+.draft-offer-btn.active { border-color: #ffd166; background: #2f2717; }
+.draft-offer-btn.selected { box-shadow: 0 0 0 2px #3d5afe inset; }
+.draft-offer-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-bottom: 3px;
+}
+.draft-offer-btn.passive .draft-offer-tag { background: #7ee787; color: #12210f; }
+.draft-offer-btn.active .draft-offer-tag { background: #ffd166; color: #2f2717; }
+.draft-offer-name { display: block; font-weight: bold; font-size: 13px; margin: 2px 0; }
+.draft-offer-desc { display: block; font-size: 12px; color: #b7bac2; }
+
+/* C-3: 전투 결과(기본 1줄 + 펼침 분해) */
+.battle-log-row { margin: 2px 0; }
+.battle-log-toggle {
+  background: none;
+  border: none;
+  color: #e8e8ea;
+  text-align: left;
+  cursor: pointer;
+  padding: 3px 2px;
+  font-size: 13px;
+  width: 100%;
+  font-family: inherit;
+}
+.battle-log-toggle:hover { color: #ffd166; background: #2f323b; border-radius: 3px; }
+.battle-log-detail {
+  margin: 2px 0 8px 18px;
+  padding: 6px 10px;
+  background: #14151a;
+  border-left: 2px solid #4a4d57;
+  border-radius: 0 4px 4px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #b7bac2;
+}
+
+/* ★D2-C — Bo3 매치 진행 패널(매치 모드에서만 표시 — 단판 모드는 이 블록과 무관,
+   #match-panel 자체가 hidden으로 남는다). 기존 팔레트만 재사용(신규 색 없음):
+   골드(#ffd166)=이월/판번호, 초록(#7ee787)=이월 박스 강조, 파랑(#4fc3f7)=리셋 박스 강조. */
+.match-scoreboard { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; margin-bottom: 4px; }
+.match-scoreboard b { color: #ffd166; }
+.match-box {
+  margin: 6px 0;
+  padding: 8px 10px;
+  background: #1c1e24;
+  border: 1px solid #3a3d46;
+  border-radius: 5px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.match-box h4 { margin: 0 0 4px; font-size: 12px; color: #b7bac2; }
+.match-box.carry { border-left: 3px solid #7ee787; }
+.match-box.reset { border-left: 3px solid #4fc3f7; }
+.match-winner-banner {
+  margin: 6px 0;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+  background: #1e2b1f;
+  color: #7ee787;
+  border: 1px solid #7ee787;
+}
+
+/* 캐릭터 선택 골격 */
+.character-select-buttons { display: flex; gap: 10px; margin: 8px 0; }
+.character-card {
+  flex: 1;
+  background: #26282f;
+  border: 2px solid #4a4d57;
+  border-radius: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: #e8e8ea;
+  text-align: left;
+  font-family: inherit;
+}
+.character-card:hover { border-color: #7a8098; }
+.character-card.selected { border-color: #3d5afe; background: #1c2140; }
+.character-card-name { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.character-card-desc { font-size: 12px; color: #b7bac2; }
+.character-card-tag { margin-top: 4px; font-size: 11px; color: #ffd166; font-weight: bold; }

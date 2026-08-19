@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>도파민 포커 — M1 프로토타입</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header id="app-header">
+    <h1 id="app-title"></h1>
+    <div id="setup-panel" class="panel">
+      <label>
+        <span id="lbl-seed"></span>
+        <input type="number" id="in-seed" value="1" min="1" step="1">
+      </label>
+      <label>
+        <span id="lbl-difficulty"></span>
+        <select id="in-difficulty">
+          <option value="L1"></option>
+          <option value="L2" selected></option>
+          <option value="L3"></option>
+        </select>
+      </label>
+      <label>
+        <span id="lbl-hp-self"></span>
+        <input type="number" id="in-hp-self" min="1" step="1">
+      </label>
+      <label>
+        <span id="lbl-hp-opponent"></span>
+        <input type="number" id="in-hp-opponent" min="1" step="1">
+      </label>
+      <button type="button" class="secondary" id="btn-hp-default" disabled></button>
+      <span id="hp-status-hint" class="hint"></span>
+      <label class="checkbox-label">
+        <input type="checkbox" id="in-autorun">
+        <span id="lbl-autorun"></span>
+      </label>
+      <button id="btn-newgame"></button>
+      <button id="btn-newmatch" class="secondary"></button>
+      <span id="autorun-hint" class="hint"></span>
+      <span id="mode-hint" class="hint"></span>
+      <span id="setup-error-hint" class="inline-error" hidden role="alert"></span>
+    </div>
+  </header>
+
+  <section id="character-select-panel" class="panel">
+    <h2 id="character-select-title"></h2>
+    <p id="character-select-desc"></p>
+    <div id="character-select-buttons" class="character-select-buttons"></div>
+    <div id="character-select-opponent-note" class="hint"></div>
+  </section>
+
+  <main id="game-root">
+    <section id="match-panel" class="panel" hidden>
+      <h2 id="match-panel-title"></h2>
+      <div id="match-body"></div>
+    </section>
+
+    <section id="status-bar" class="panel"></section>
+
+    <section id="battlefield">
+      <div id="panel-opponent" class="player-panel panel"></div>
+      <div id="panel-shared" class="panel"></div>
+      <div id="panel-self" class="player-panel panel"></div>
+    </section>
+
+    <div id="action-error-banner" class="inline-error action-error-banner" hidden role="alert"></div>
+
+    <section id="action-panel" class="panel"></section>
+
+    <section id="readout-panel" class="panel"></section>
+
+    <section id="battle-log-panel" class="panel">
+      <h2 id="battle-log-title"></h2>
+      <div id="battle-log-body"></div>
+    </section>
+
+    <section id="summary-panel" class="panel" hidden></section>
+
+    <section id="instrument-panel" class="panel">
+      <h2 id="instrument-title"></h2>
+      <div id="instrument-body"></div>
+    </section>
+
+    <section id="export-panel" class="panel">
+      <h2 id="export-title"></h2>
+      <button id="btn-export"></button>
+      <button id="btn-selfcheck"></button>
+      <div id="selfcheck-result"></div>
+      <pre id="export-block"></pre>
+    </section>
+  </main>
+
+  <script src="strings.js"></script>
+  <script src="engine-loader.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

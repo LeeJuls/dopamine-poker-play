@@ -1,0 +1,163 @@
+{
+  "_meta": {
+    "purpose": "S5 밸런스 튜닝 최종 확정 스냅샷 — plan §3-S5 게이트④ 산출물. current.json이 실행용이면 이 파일은 '왜 이 값들이고 무엇을 확인했는지'의 기록용 리포트다. 엔진은 이 파일을 읽지 않는다(current.json만 읽음).",
+    "status": "S5 게이트 최종 PASS(20/20 — 19 확정 PASS + B6-a:P1 오너 승인 예외 1건)",
+    "candidate": "S5-C6 = S5-C5 + a3Denial 20→19(L37)",
+    "decidedBy": "오너 호출#2(2026-08-15) — P1-ⓑ 1건 예외 승인, 카드 원안(P1 '+1장') 유지, 최종 판정은 M1 §11 재미 판정 세션의 실플레이(훅3·G5)로 이월",
+    "provenance": {
+      "ledger": "docs/features/M1_재미검증/raw/S5_튜닝원장.md §3-1(diff)·§3-3(C6)·§9-1(θ*스크리닝)·§9-2(확정측정 raw)·§10(T3 재발)",
+      "progressLog": "docs/features/M1_재미검증/진행로그.md — 「★S5 확정 스케일 측정 완료」·「P1-ⓑ 임계 상충 판정」·「★오너 호출#2 결과」 3개 항목",
+      "gateSpec": "docs/features/M1_재미검증/plan.md §3-S5 게이트①~⑤",
+      "bandDefinitions": "docs/features/M1_재미검증/raw/합격선.md"
+    }
+  },
+
+  "handles": {
+    "_note": "current.json에 실제로 반영된 13개 손잡이(이전값 → 최종값). 4개는 2단 동결(--base=JOINT)에서, 9개는 S5 튜닝에서 나왔다 — S4 시점 current.json 실제값 기준.",
+    "player.maxHp": { "from": 150, "to": 800, "run": "L18", "why": "(가)/(다) B1 동반 통과 — 결합 창 hp 750~850" },
+    "player.spThreshold": { "from": 30, "to": 15, "run": "2단 동결(JOINT)", "why": "B3-a 밴드 진입(액티브 보유 기회 확보)" },
+    "heal.perLevel": { "from": 5, "to": 2, "run": "2단 동결(JOINT)", "why": "(다) B1 상한" },
+    "buff.defPerStack": { "from": 2, "to": 0, "run": "2단 동결(JOINT)", "why": "(가)/(다)를 반대 방향으로 움직이는 손잡이" },
+    "buff.stackCap": { "from": 6, "to": 2, "run": "L11", "why": "P4 유일 해법 — +1 수트 레벨 누적 가속을 2스택에서 봉인" },
+    "buff.atkPerStack": { "from": 2, "to": 6, "run": "L18", "why": "stackCap 축소로 잃은 총 버프량(+12) 복원 — B1 유지" },
+    "card.a1.damage": { "from": 8, "to": 0, "run": "L25", "why": "A1은 화상 부여 전용이 된다(직접 피해 0) — isAttack:true는 유지, job 기본공격은 그대로 맞음" },
+    "card.a2.damage": { "from": 8, "to": 0, "run": "L20", "why": "A2는 동결 부여 전용이 된다" },
+    "status.freeze.exchangePenalty": { "from": 2, "to": 1, "run": "L20", "why": "A2 밴드 진입의 나머지 절반" },
+    "p5.factor": { "from": 2, "to": 1.25, "run": "L20/L26", "why": "B6-a:P5 밴드 진입" },
+    "p5.hpThreshold": { "from": 0.3, "to": 0.1, "run": "L27", "why": "B6-a:P5 밴드 진입" },
+    "a4.factor": { "from": 10, "to": 12, "run": "L10", "why": "A4 판정불가 해소 — factor > sumRaw 성립, EV 티어가 A4를 고르게 됨(사용 0 → 0.91회/판)" },
+    "ai.actionChoice.statusValue.a3Denial": { "from": 8, "to": 19, "run": "L09→L37", "why": "A3 판정불가 해소 + 발동요건(F1) 여유 확보. 20은 승률이 밴드 하한(+0.19pp)에 붙었고 14~18은 사용률이 F1 임계 0.5에 붙는다 — 19만 승률·사용률 둘 다 여유(50.19% · 사용 0.911)" },
+
+    "handsOff": "손대지 않은 것: player.handCapBase(8장 룰)·player.handCapP1Bonus(1 유지)·job.baseAttack·multiplier.*·draft.*(cardTypes·slotsMax 무접촉)·exchange.*·sp.*·suit.levelCap·damage.*·handRank.*·ai.l2/l3.*"
+  },
+
+  "reproduction": {
+    "_warning": "★tune.js의 --base 기본값은 JOINT(player.maxHp=900 포함)다. current.json은 이미 최종값(maxHp=800 등)을 담고 있으므로, current.json 그대로 검증하려면 반드시 --base=NONE을 명시해야 한다 — 안 그러면 JOINT가 maxHp를 900으로 되돌려 덮어써 버린다.",
+    "command": "node proto/sim/tune.js --confirm --k=1 --theta=4 --offset=100000 --base=NONE",
+    "note": "--set 불필요 — 13개 손잡이가 이제 current.json 자체에 있다. S5_튜닝원장.md §9-2의 원 재현 커맨드는 --set으로 같은 값을 임시 주입했었다(이번에 처음 파일에 baked-in).",
+    "seed": {
+      "band": "CONFIRM(확정 대역)",
+      "k": 1,
+      "range": "7,100,000–7,157,199 (57,200개 연속)",
+      "breakdown": {
+        "cell1": "7,100,000–7,109,999 (10,000판)",
+        "cell2Confirm": "7,110,000–7,114,999 (5,000쌍)",
+        "cell3": "7,115,000–7,119,999 (5,000쌍)",
+        "cell4Main": "7,120,000–7,127,199 (9종×800쌍)",
+        "cell4Aux": "7,127,200–7,147,199 (A4 20,000판)",
+        "cell5": "7,147,200–7,157,199 (10,000판)"
+      },
+      "nullControls": "탐색 대역 2,600,000–2,602,999(C2·C3·C4 — 규약대로 탐색 대역, 판정 아님)"
+    },
+    "theta": {
+      "star": 4,
+      "source": "L35 — 공식 θ 스크리닝(합격선 §5-3 재선정 규격), off=400000, 2,000쌍/θ×9점, hold_aware_v2, 그리드 Θ 무변경, θ*=argmax(동률시 작은 θ)",
+      "gridResult": "θ0 50.00(C2동치) · 0.08 51.78 · 1 52.20 · 4 52.30(★max) · 8 51.65 · 16 50.88 · 32 52.20 · 64 48.10 · 128 36.48",
+      "invariance": "L44 — a3Denial 20 vs 19에서 셀2 점추정·CI 완전 동일(ACTION_CHOICE는 actionChoiceFallback 균등무작위라 ai.actionChoice.*를 읽지 않음) → θ*=4가 C6(a3Denial=19)에도 그대로 유효"
+    },
+    "configHash": {
+      "(가)": "cfgecc1a9c9",
+      "(다)": "cfg3d682dd4",
+      "verifiedIdentical": "current.json을 --base=NONE으로 로드했을 때 이 해시들이 §9-2의 확정측정 config 해시와 바이트 동일함을 확인함(2026-08-15, balance-designer)"
+    },
+    "totalGames": 60559,
+    "wallClockSeconds": 1180
+  },
+
+  "results": {
+    "_note": "값·CI·판정은 S5_튜닝원장.md §9-2(확정 측정, k=1)을 그대로 옮긴 것 — 재계산·재해석 없음(합격선 F5).",
+    "gate1_B1_B8_전항목": {
+      "verdict": "★PASS — 20개 판정 항목 중 19개 확정 PASS + B6-a:P1(P1-ⓑ) 1건은 오너 승인 예외(호출#2, 2026-08-15)",
+      "B1a_가": { "value": 16, "band": "15~40", "verdict": "PASS", "margin": "하한 +1" },
+      "B1a_다": { "value": 39, "band": "15~40", "verdict": "PASS", "margin": "상한 −1 (가장 좁은 경계)" },
+      "B1b_가다": { "value": "28 / 42", "band": "≤60", "verdict": "PASS" },
+      "B1c_가다": { "value": "0 / 0", "band": "=0", "verdict": "PASS" },
+      "B2": { "value": 0.6793, "ci": [0.6695, 0.6889], "denominator": 9241, "band": "0.65~0.85", "verdict": "PASS", "margin": "하한 +2.93pp" },
+      "B3a": { "value": 3.8051, "band": "2~6", "verdict": "PASS" },
+      "B3b": { "value": 1.0270, "band": "≤2.5", "verdict": "PASS", "caveat": "산술 종속(§4-6-①) — 독립 증거로 인용 금지" },
+      "B4": { "value": 0.5288, "ci": [0.5197, 0.5378], "denominator": 10000, "thetaStar": 4, "band": "점추정≥0.52 ∧ CI하한≥0.50", "verdict": "PASS", "margin": "점추정 +0.88pp · CI하한 +1.97pp", "significance": "S5 최초로 B4가 확정 스케일 통과 — 개선분의 출처는 config가 아니라 hold_aware_v2 프로브 결함 정정(D-1/D-2)" },
+      "B5": { "value": 0.0378, "ci": [0.0178, 0.0568], "denominator": 10000, "band": "≤0.10 ∧ CI상한≤0.10", "verdict": "PASS", "margin": "상한 −4.32pp", "discriminability": "수트레벨차 0.2087 CI[0.1902,0.2271] — 0 배제, 판별력 전제 충족" },
+      "B6a_P1": {
+        "value": 0.6650, "ci": [0.6444, 0.6850], "denominator": 1600,
+        "form": "대체검사(P1-ⓐ 효과실재 ∧ P1-ⓑ 지배금지 ≤0.65)",
+        "P1a": { "verdict": "PASS", "detail": "CI하한 64.44% > 50%" },
+        "P1b": { "verdict": "FAIL", "detail": "점추정 66.50% > 65%, +1.50pp" },
+        "resolution": "★오너 호출#2 예외 승인(2026-08-15) — 카드 원안 유지, 최종 판정은 M1 §11 실플레이(훅3·G5)로 이월",
+        "notASamplingFluke": "독립 6블록 풀링 64.74%(9,600판, SE≈0.49pp) — 참값이 판정선 65% 바로 위/아래에 걸림",
+        "exhaustedHandles": "handCapP1Bonus 전 구간(정수 0/1/2뿐) · exchange.* 6변형(독립 3블록 재현에서 부호 반전, P1 레버 아님) · sp.* 4변형(구조적 무효 — 셀4-주는 draftOff+패시브라 SP 소비경로 없음) · maxHp 500/800/900 · buff.stackCap/atkPerStack · multiplier.cap — 전부 60~73% 구간"
+      },
+      "B6a_P2": { "value": 0.5356, "ci": [0.5150, 0.5556], "band": "0.45~0.55", "verdict": "PASS", "margin": "상한 −1.44pp" },
+      "B6a_P3": { "value": 0.4925, "band": "0.45~0.55", "verdict": "PASS" },
+      "B6a_P4": { "value": 0.5138, "band": "0.45~0.55", "verdict": "PASS" },
+      "B6a_P5": { "value": 0.5225, "band": "0.45~0.55", "verdict": "PASS", "note": "HP≤30% 라운드 3,530" },
+      "B6a_A1": { "value": 0.5125, "usageRate": 6.144, "band": "0.45~0.55", "verdict": "PASS", "note": "사용/판, 발동 요건 충족" },
+      "B6a_A2": { "value": 0.5106, "usageRate": 6.023, "band": "0.45~0.55", "verdict": "PASS", "note": "사용/판, 발동 요건 충족" },
+      "B6a_A3": { "value": 0.4838, "usageRate": 0.970, "band": "0.45~0.55", "verdict": "PASS", "note": "L37 조정 성과 — 하한 여유 +3.38pp(조정 전 후보는 +0.19pp)" },
+      "B6a_A4": { "value": 0.5319, "usageRate": 0.912, "band": "0.45~0.55", "verdict": "PASS", "margin": "상한 −1.81pp" },
+      "B6b": { "value": "0 / 54,968", "ci": [0, 0], "band": "<1% ∧ CI상한≤2%", "verdict": "PASS", "note": "분모 요구(1,000)의 54.9배" },
+      "B7a": { "value": 0.9995, "ci": [0.9990, 0.9999], "band": "≥0.80", "verdict": "PASS", "note": "포화(§4-6②)" },
+      "B7b": { "value": 0.9254, "ci": [0.9204, 0.9307], "band": "≥0.50", "verdict": "PASS", "note": "포화" },
+      "B8": { "value": 0.5987, "ci": [0.5893, 0.6082], "denominator": 9954, "band": "≥0.50", "verdict": "PASS", "margin": "+9.87pp" }
+    },
+    "gate2_다구성_B1": {
+      "verdict": "PASS",
+      "note": "확정 스케일에서 이미 PASS 확인(B1-a(다)=39) — §9-2 그대로",
+      "additionalReport": { "B2_다": 0.6383, "B8_다": 0.6167, "B7a_다": 0.1144, "B7b_다": 0.0041 }
+    },
+    "gate3_필수보고지표": {
+      "multiplierDistribution": "×8(cap) 51.76% · ×5 20.92% · ×4 19.86% · ×2.5 5.12% · ×2 2.29% · ×1.25 0.04% · ×1 0.01%",
+      "x4PlusReach_B7b": { "value": 0.9254, "ci": [0.9204, 0.9307] },
+      "prevRoundWinnerNextRoundWinRate_B8aux": { "value": 0.5834, "pairs": 157143, "note": "50% 상회 — §3-5 '이기는 게 손해' 경고 조건 미해당(관성은 강하나 승자 페널티가 뒤집지 못함)" },
+      "monotonicitySmoke": {
+        "L3vL2": { "value": 0.53690, "ci": [0.52660, 0.54620], "n": 10000 },
+        "L2vL1": { "value": 0.98750, "ci": [0.98292, 0.99208], "n": 2400 },
+        "verdict": "방향 유지 — CI가 50%를 명확히 배제"
+      },
+      "G2threeway_at_thetaStar4": { "i_tiebreak": 0.9572, "ii": 0.0093, "iii_realTradeoff": 0.0335, "G2value": 0.0428, "caveat": "이월 고려가 이기는 경로의 대부분(95.72%)은 여전히 타이브레이크 — 합격선 §3-2 경고 유효" }
+    },
+    "gate5_engineRegression": {
+      "applicable": false,
+      "note": "S5 전 구간에서 proto/engine/ 코드 무접촉 확인됨(config만 변경) — 역류 규정(R11) 해당 없음"
+    },
+    "invariants": {
+      "INVARIANT_VIOLATION": 0,
+      "anomalousGames": 0,
+      "totalGamesInBattery": 60559
+    },
+    "nullControls": {
+      "C1_seatBias": { "value": 0.4953, "ci": [0.4861, 0.5050], "verdict": "OK" },
+      "C2_theta0DecisionEquivalence": { "value": 0.5000, "ci": [0.5000, 0.5000], "verdict": "OK", "note": "결정 동치 → 분산 0(기대 결과)" },
+      "C3_sameMirroPolicy": { "value": 0.5000, "ci": [0.5000, 0.5000], "verdict": "OK" },
+      "C4_zeroVsZeroCards": { "value": 0.5000, "ci": [0.5000, 0.5000], "verdict": "OK", "note": "1회차(L01)의 NG(42.67%)가 확정 스케일(1,000쌍)에서는 재현 안 됨 — 2,000판 블록 표본요동이었음이 확정" }
+    }
+  },
+
+  "verification": {
+    "_note": "config baked-in 이후(2026-08-15) 최종 검증 — plan §3-S5 게이트④ 마무리 단계에서 실행.",
+    "determinismCheck": {
+      "cliDiff": { "command": "node proto/engine/cli.js --seed=777 --diff", "result": "equal:true" },
+      "diffcheckSmoke": { "command": "node proto/sim/run.js diffcheck --profile=smoke", "result": "본문 JSON diff 0(18,936 bytes) · 본문 MD diff 0(8,433 bytes) — 메타(부록) 실행시간만 상이(부록은 diff 대상 아님)" }
+    },
+    "finalBatteryNoOverride": {
+      "command": "node proto/sim/tune.js --confirm --k=1 --theta=4 --offset=100000 --base=NONE",
+      "status": "★PASS — §9-2 확정 측정(k=1)과 20개 판정 항목 전부 소수점 4자리까지 완전 일치(B6-a:P1의 FAIL 판정까지 동일). config가 tune.js --set 없이 current.json 파일 자체만으로 §9-2를 재현함을 실증 — 빠진 손잡이 없음.",
+      "totalGames": 60559,
+      "wallClockSeconds": 1201.2,
+      "configHashMatch": "(가) cfgecc1a9c9 · (다) cfg3d682dd4 — §9-2와 바이트 동일",
+      "metricByMetric": {
+        "B1a_가": "16 = 16 ✓", "B1a_다": "39 = 39 ✓", "B1b_가다": "28/42 = 28/42 ✓", "B1c_가다": "0/0 = 0/0 ✓",
+        "B2": "0.6793 CI[0.6695,0.6889] 분모9241 = 동일 ✓",
+        "B3a": "3.8051 = 3.8051 ✓", "B3b": "1.0270 = 1.0270 ✓",
+        "B4": "0.5288 CI[0.5197,0.5378] θ*=4 = 동일 ✓",
+        "B5": "0.0378 CI[0.0178,0.0568] = 동일 ✓",
+        "B6a_P1": "0.6650 CI[0.6444,0.6850] FAIL = 동일(오너 승인 예외는 판정 절차 밖에서 흡수) ✓",
+        "B6a_P2toA4": "P2 0.5356·P3 0.4925·P4 0.5138·P5 0.5225·A1 0.5125·A2 0.5106·A3 0.4838·A4 0.5319 = 전부 동일 ✓",
+        "B6b": "0/54968 = 0/54968 ✓",
+        "B7a": "0.9995 CI[0.9990,0.9999] = 동일 ✓", "B7b": "0.9254 CI[0.9204,0.9307] = 동일 ✓",
+        "B8": "0.5987 CI[0.5893,0.6082] 분모9954 = 동일 ✓",
+        "nullControls": "C1~C5 전부 OK = §9-2와 동일"
+      },
+      "rawOutput": "C:/Users/user/AppData/Local/Temp/claude/D--unreal/885784eb-c33a-4a0a-be82-c11f8fdf1c69/scratchpad/final_verify_k1.{log,json} (세션 스크래치패드 — 저장소 미커밋. 재현하려면 위 command를 그대로 실행하면 된다, 결정론이므로 동일 결과)"
+    }
+  }
+}
